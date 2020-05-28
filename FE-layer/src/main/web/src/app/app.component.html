@@ -1,0 +1,13 @@
+<mat-toolbar color="primary">
+    Web Application
+    <span style="padding-left: 33em;">
+        <button mat-button [matMenuTriggerFor]="menu">Menu</button>
+        <mat-menu #menu="matMenu">
+        <button mat-menu-item>Edit Profile</button>
+        <button mat-menu-item>Change Password</button>
+        <button mat-menu-item (click)="logout()">Logout</button>
+        </mat-menu>
+    </span>
+</mat-toolbar>
+
+<router-outlet></router-outlet>
