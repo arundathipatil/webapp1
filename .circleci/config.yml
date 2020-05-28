@@ -1,0 +1,22 @@
+version: 2.1
+jobs:
+  build:
+    working_directory: ~/webapp
+    docker:
+    	- image: circleci/openjdk:8-jdk
+    	- image: circleci/mysql:5.7.30
+    	  environment:
+    	  - MYSQL_USER: admin
+    	  - MYSQL_PASSWORD: Mindtree@123
+    	  - MYSQL_DATABASE: db_webapp
+    	
+    steps:
+      - checkout
+      - run: 
+      	  name: Build JAR
+      	  command: 
+      	  	echo 'This is the build platform'
+      	  	pwd
+      	  	ls -al
+      	  	./mvnw clean install
+
