@@ -77,7 +77,6 @@ export class LoginComponent implements OnInit {
         }, error=>{
           alert("There was error Logging in!Please try latter")
         })
-        console.warn(this.loginForm.value);
       }
 
       // not needed

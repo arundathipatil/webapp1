@@ -1,25 +1,40 @@
 package neu.edu.csye6225.model;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-//@NamedNativeQueries({
-//        @NamedNativeQuery(
-//                name    =   "updateEmployeeName",
-//                query   =   "UPDATE user SET firstName = ?, lastName = ? WHERE email = ?"
-//                ,resultSetMapping = "updateResult"
-//        )
-//})
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Integer id;
 
-
+    @Column(name = "first_name")
     private String firstName;
+    @Column(name = "last_name")
     private String lastName;
+    @Column(name = "email", unique = true)
     private String email;
+    @Column(name = "password")
     private String password;
+
+//    @OneToMany(
+//            mappedBy = "user",
+//            cascade = CascadeType.ALL,
+//            fetch = FetchType.LAZY
+//    )
+//    private Set<Book> books;
+
+//    public User() {
+//        books = new HashSet<>();
+//    }
+
+//    public User(String name) {
+////        this.name = name;
+//        books = new HashSet<>();
+//    }
 
     public Integer getId() {
         return id;
@@ -60,4 +75,12 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
+
+//    public Set<Book> getBooks() {
+//        return books;
+//    }
+//
+//    public void setBooks(Set<Book> books) {
+//        this.books = books;
+//    }
 }

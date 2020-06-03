@@ -1,0 +1,101 @@
+<h1 mat-dialog-title>Update Book {{data.title}}</h1>
+
+
+<div mat-dialog-content> 
+  <form [formGroup]="bookForm">
+    <div>
+      <label>
+        ISBN:
+        <input id="isbn" type="text" formControlName="isbn" [(ngModel)]="data.isbn">
+      </label>
+      <div *ngIf="isbn.invalid && (isbn.dirty || isbn.touched)" class="alert alert-danger">
+  
+        <div *ngIf="isbn.errors.required" style="color: red;">
+          isbn is required.
+        </div>
+      </div>
+    </div>
+  
+  
+    <div>
+      <label>
+        Title:
+        <input id="title" type="text" formControlName="title" [(ngModel)]="data.title">
+      </label>
+      <div *ngIf="title.invalid && (title.dirty || title.touched)" class="alert alert-danger">
+  
+        <div *ngIf="title.errors.required" style="color: red;">
+          title is required.
+        </div>
+      </div>
+    </div>
+  
+    <div>
+      <label>
+        Authors:
+        <input id="authors" type="text" formControlName="authors" [(ngModel)]="data.authors">
+      </label>
+      <div *ngIf="authors.invalid && (authors.dirty || authors.touched)" class="alert alert-danger">
+  
+        <div *ngIf="authors.errors.required" style="color: red;">
+          Author value is required.
+        </div>
+      </div>
+    </div>
+  
+    <div>
+      <label>
+        Publication Date:
+        <!-- <input id="publicationDate" type="text" formControlName="publicationDate"> -->
+        <mat-form-field>
+          <mat-label>Choose a date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="publicationDate" [(ngModel)]="data.publicationDate"> 
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </label>
+      <div *ngIf="publicationDate.invalid && (publicationDate.dirty || publicationDate.touched)" class="alert alert-danger">
+  
+        <div *ngIf="publicationDate.errors.required" style="color: red;">
+          Publication Date is required.
+        </div>
+      </div>
+    </div>
+  
+    <div>
+      <label>
+        Quantity:
+        <input id="quantity" type="text" formControlName="quantity" [(ngModel)]="data.quantity">
+      </label>
+      <div *ngIf="quantity.invalid && (quantity.dirty || quantity.touched)" class="alert alert-danger">
+  
+        <div *ngIf="quantity.errors.required" style="color: red;">
+          Quantity is required.
+        </div>
+        <div *ngIf="quantity.errors.max || quantity.errors.min" style="color: red;">
+          Enter value between 0-999
+        </div>
+      </div>
+    </div>
+  
+    <div>
+      <label>
+        Price:
+        <input id="price" type="text" formControlName="price" [(ngModel)]="data.price">
+      </label>
+      <div *ngIf="price.invalid && (price.dirty || price.touched)" class="alert alert-danger">
+  
+        <div *ngIf="price.errors.required" style="color: red;">
+          Price is required.
+        </div>
+        <div *ngIf="price.errors.max || price.errors.min" style="color: red;">
+          Enter value between 0.01-9999.99
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<div mat-dialog-actions>
+  <button type="submit" [disabled]="!bookForm.valid" [mat-dialog-close]="data" cdkFocusInitial>Update</button>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+</div>

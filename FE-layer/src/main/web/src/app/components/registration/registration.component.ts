@@ -68,7 +68,12 @@ export class RegistrationComponent implements OnInit {
     console.warn(this.registrationForm.value);
     this.registrationService.registerUser(user)
       .subscribe((data => {
-        alert("User created Successfully. Please login");
+        if(data != null){
+          alert("User created Successfully. Please login");
+        } else {
+          alert("User email already exsists!Please use different email id")
+        }
+       
         this.route.navigateByUrl("");
       }), error => {
         alert("There was a problem creating User! Please try again later");
