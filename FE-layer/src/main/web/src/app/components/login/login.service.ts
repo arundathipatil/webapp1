@@ -17,8 +17,8 @@ export class LoginService {
    }
 
   login(email: string, pwd: string) : Observable<any> {
-    // return this.apiService.get(constant.urls.login +"?email="+email+"&pwd="+pwd);
-    return of([{name:"sucess"}]);
+    return this.apiService.get(constant.urls.login +"?email="+email+"&pwd="+pwd);
+    // return of([{name:"sucess"}]);
   }
 
   // not needed
@@ -34,5 +34,6 @@ export class LoginService {
   // not needed
   getUserDeatislFromApi(email: string) {
      return this.apiService.get(constant.urls.getUserDeatils + "?email="+email);
+    // return of({firstName:"Prati", lastName: "Patil", email:"prati.patil@gmail.com"});
   }
 }

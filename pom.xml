@@ -13,11 +13,31 @@
         <module>BE-layer</module>
     </modules>
 
+<!--    <properties>-->
+<!--        &lt;!&ndash; The main class to start by executing java -jar &ndash;&gt;-->
+<!--        &lt;!&ndash;        <start-class>com.mycorp.starter.HelloWorldApplication</start-class>&ndash;&gt;-->
+<!--&lt;!&ndash;        <start-class>org.csye6225.webapp.neu.edu.csye6225.SpringbootApplication</start-class>&ndash;&gt;-->
+<!--        <start-class>org.csye6225.webapp.neu.edu.csye6225.SpringbootApplication</start-class>-->
+
+<!--    </properties>-->
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.3.0.RELEASE</version>
     </parent>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 
 </project>
