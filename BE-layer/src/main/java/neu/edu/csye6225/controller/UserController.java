@@ -162,6 +162,7 @@ public class UserController {
       return bookRepository.findAll(Sort.by(Sort.Direction.ASC, "price"))
                                 .stream()
                                 .filter(a-> !a.getUserEmail().equals(email))
+                                .filter(a -> a.getQuantity() !=0)
                                 .sorted(compareByNameAndPrice)
                                 .collect(Collectors.toList());
 

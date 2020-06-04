@@ -25,8 +25,12 @@ export class RegistrationComponent implements OnInit {
   constructor(private registrationService: RegistrationService, private route: Router) { }
 
   ngOnInit(): void {
-    this.firstName = new FormControl('', Validators.required);
-    this.lastName = new FormControl('', Validators.required);
+    this.firstName = new FormControl('', [
+      Validators.required,
+      Validators.pattern("[a-zA-Z ]*")]);
+    this.lastName = new FormControl('', [
+      Validators.required,
+      Validators.pattern("[a-zA-Z ]*")]);
     this.email = new FormControl('', [
       Validators.required,
       Validators.email
@@ -67,17 +71,17 @@ export class RegistrationComponent implements OnInit {
     }
     console.warn(this.registrationForm.value);
     this.registrationService.registerUser(user)
-      .subscribe((data => {
-        if(data != null){
-          alert("User created Successfully. Please login");
-        } else {
-          alert("User email already exsists!Please use different email id")
-        }
-       
-        this.route.navigateByUrl("");
-      }), error => {
-        alert("There was a problem creating User! Please try again later");
-      });
+        .subscribe((data => {
+          if(data != null){
+            alert("User created Successfully. Please login");
+          } else {
+            alert("User email already exsists!Please use different email id")
+          }
+
+          this.route.navigateByUrl("");
+        }), error => {
+          alert("There was a problem creating User! Please try again later");
+        });
   }
 
   validatePassword(confirmControl: FormControl): { [key: string]: boolean } | null  {
@@ -86,7 +90,7 @@ export class RegistrationComponent implements OnInit {
     } else {
       return { 'ageRange': true };;
     }
-    
+
   }
 
 }
