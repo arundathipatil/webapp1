@@ -10,6 +10,9 @@
       <div *ngIf="firstName.errors.required" style="color: red;">
         First Name is required.
       </div>
+      <div *ngIf="firstName.errors.pattern" style="color: red;">
+        Only Alphabets are allowed in  the first Name
+      </div>
     </div>
   </div>
 
@@ -21,8 +24,11 @@
     </label>
     <div *ngIf="lastName.invalid && (lastName.dirty || lastName.touched)" class="alert alert-danger">
 
-      <div *ngIf="firstName.errors.required" style="color: red;">
+      <div *ngIf="lastName.errors.required" style="color: red;">
         Last Name is required.
+      </div>
+      <div *ngIf="lastName.errors.pattern" style="color: red;">
+        Only Alphabets are allowed in the last Name
       </div>
     </div>
   </div>
@@ -35,7 +41,7 @@
     <div *ngIf="email.invalid && (email.dirty || email.touched)" class="alert alert-danger">
 
       <div *ngIf="email.errors.required" style="color: red;">
-        Last Name is required.
+        Email is required.
       </div>
       <div *ngIf="email.errors.email" style="color: red;">
         Please provide a valid email id
