@@ -2,7 +2,7 @@
 
 ## Getting Started
 
-### Prerequisites
+### Prerequisites..
 	Git
 	JDK 8 or later
 	Maven 3.0 or later
