@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, Inject } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { Router } from '@angular/router';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { HomeService } from '../home.service';
@@ -50,7 +51,7 @@ export class MyBookStoreComponent {
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-  constructor(private homeService: HomeService, public dialog: MatDialog) {
+  constructor(private homeService: HomeService, public dialog: MatDialog, private router: Router) {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
     this.homeService.getAllBooksByemail(this.currentUser.email)
       .subscribe((data) => {
@@ -124,6 +125,12 @@ export class MyBookStoreComponent {
           })
       }
     });
+  }
+
+  navigateToBookDetails(data) {
+    localStorage.setItem("bookDetails", JSON.stringify(data));
+    localStorage.setItem("navigatedFrom", "1");
+    this.router.navigate(['home/bookDetails']);
   }
 
 

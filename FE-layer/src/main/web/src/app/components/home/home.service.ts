@@ -56,4 +56,16 @@ export class HomeService {
   changePassword(data: any) {
     return this.apiService.post(constant.urls.changepwd, data);
   }
+
+  uploadPhoto(data: any) {
+    return this.apiService.post(constant.urls.uploadPhoto, data);
+  }
+
+  getImages(userEmail: string, isbn: string) {
+    return this.apiService.get(constant.urls.getImages+"?userEmail="+userEmail+"&isbn="+isbn);
+  }
+
+  deleteImage(id: number) {
+    return this.apiService.delete(constant.urls.deleteImage+"?id="+id);
+  }
 }

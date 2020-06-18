@@ -1,0 +1,57 @@
+<div style="width: 20%;height: 20%;">
+  
+    <mdb-carousel [animation]="'slide'">
+      <ng-container *ngFor="let image of imageList">
+        <mdb-carousel-item class="carouselItem" style="flex-direction: column;">
+          <img class="d-block w-100 image" [src]="image.image" alt="First slide">
+          <button *ngIf="navigatedFrom==1" (click)="deleteImage(image)">Delete</button>
+        </mdb-carousel-item>
+      </ng-container>
+      </mdb-carousel>
+      
+   
+</div>
+
+<!-- <div *ngFor="let image of imageList">
+  <img [src]="image.image">
+</div> -->
+
+
+<div *ngIf="navigatedFrom==1">
+    <h4>Welcome to !</h4>
+    <mat-card>
+          <form [formGroup]="uploadForm" (ngSubmit)="uploadSubmit()">
+            <mat-card-content>
+              <br>
+              <input formControlName="document" type="file" ng2FileSelect accept=".png, .jpg" [uploader]="uploader" multiple/><br/>
+              <br>
+              <table>
+                <thead>
+                <tr>
+                  <th width="90%">
+                    File Name
+                  </th>
+                  <th width="10%">
+                    Remove
+                  </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let item of uploader.queue">
+                  <th width="90%">
+                    (NaN MB)
+                  </th>
+                  <th class="text-center" width="10%">
+                    <mat-icon (click)="item.remove()">delete</mat-icon>
+                  </th>
+                </tr>
+                </tbody>
+              </table>
+              <br>
+              <button mat-raised-button color="accent" [disabled]="!uploadForm.valid" type="submit">Upload Data</button>
+            </mat-card-content>
+          </form>
+    </mat-card>
+    
+</div>
+

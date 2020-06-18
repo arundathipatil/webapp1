@@ -12,6 +12,9 @@ export const constant = {
         "addItemToCart": "/api/addBookToCart",
         "getCartItems": "/api/getCartItems",
         "deleteItemFromCart": "/api/deleteItemFromCart",
-        "changepwd": "/api/changePassword"
+        "changepwd": "/api/changePassword",
+        "uploadPhoto": "/api/uploadPhoto",
+        "getImages": "/api/getPhotosByBookISBNAndEmail",
+        "deleteImage": "/api/deleteImage"
     }
 }

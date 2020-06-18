@@ -1,17 +1,18 @@
 package neu.edu.csye6225.controller;
 
-import neu.edu.csye6225.model.Cart;
-import neu.edu.csye6225.model.Changepwd;
+import neu.edu.csye6225.model.*;
 import neu.edu.csye6225.repository.CartRepository;
+import neu.edu.csye6225.repository.ImageRepository;
+import neu.edu.csye6225.service.AmazonService;
+import neu.edu.csye6225.service.AmazonServiceImpl;
 import org.springframework.data.domain.Sort;
 import neu.edu.csye6225.helper.Hashing;
-import neu.edu.csye6225.model.Book;
-import neu.edu.csye6225.model.User;
 import neu.edu.csye6225.repository.BookRepository;
 import neu.edu.csye6225.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,6 +26,10 @@ public class UserController {
     private BookRepository bookRepository;
     @Autowired
     private CartRepository cartRepository;
+    @Autowired
+    private AmazonService  amazonService;
+    @Autowired
+    private ImageRepository imageRepository;
 
     @PostMapping("/registerUser")
     public @ResponseBody User registerNewUser(@RequestBody User user) {
@@ -128,20 +133,35 @@ public class UserController {
     @PostMapping("/updateBookDetails")
     public @ResponseBody int updateBookDetails(@RequestBody Book book) {
         Book b = bookRepository.findById(book.getId());
-        Cart c = cartRepository.findBySellersemailAndIsbn(book.getUserEmail(), book.getIsbn());
-        int cartId = c.getId();
-        cartRepository.updateBookDetailsInCart(book.getPrice(), book.getTitle(), book.getIsbn(), cartId);
-        bookRepository.updateBookDetails(book.getAuthors(),
-                                    book.getPrice(),
-                                    book.getPublicationDate(),
-                                    book.getQuantity(),
-                                    book.getTitle(),
-                                    book.getUpdatedDate(),
-                                    book.getIsbn(),
-                                    book.getUserEmail(),
-                                    book.getId());
 
-        return 1;
+        try {
+            Cart c = cartRepository.findBySellersemailAndIsbn(book.getUserEmail(), book.getIsbn());
+            int cartId = c.getId();
+            cartRepository.updateBookDetailsInCart(book.getPrice(), book.getTitle(), book.getIsbn(), cartId);
+            bookRepository.updateBookDetails(book.getAuthors(),
+                    book.getPrice(),
+                    book.getPublicationDate(),
+                    book.getQuantity(),
+                    book.getTitle(),
+                    book.getUpdatedDate(),
+                    book.getIsbn(),
+                    book.getUserEmail(),
+                    book.getId());
+
+            return 1;
+        } catch (Exception e) {
+            bookRepository.updateBookDetails(book.getAuthors(),
+                    book.getPrice(),
+                    book.getPublicationDate(),
+                    book.getQuantity(),
+                    book.getTitle(),
+                    book.getUpdatedDate(),
+                    book.getIsbn(),
+                    book.getUserEmail(),
+                    book.getId());
+
+            return 1;
+        }
     }
 
     @ResponseStatus(value = HttpStatus.OK)
@@ -200,5 +220,40 @@ public class UserController {
     @DeleteMapping("/deleteItemFromCart")
     public void deleteCartItem(@RequestParam int id) {
         cartRepository.deleteById(id);
+    }
+
+    @PostMapping("/uploadPhoto")
+    public @ResponseBody String uploadPhoto(@RequestPart(value = "file") MultipartFile multipartFile,@RequestParam(value = "bookId") String bookID, @RequestParam(value = "userId") String userId) {
+        return this.amazonService.uploadFile(multipartFile, bookID, userId);
+    }
+
+    @GetMapping("/getPhotosByBookISBNAndEmail")
+    public List<Image> getPhoto(@RequestParam String userEmail, @RequestParam String isbn) {
+        List<String> photoList = new ArrayList<>();
+
+        List<Image> imageMetadata = new ArrayList<>();
+
+        imageMetadata = imageRepository.findAllByIsbnAndUserEmail(isbn, userEmail);
+
+        for (Image img: imageMetadata){
+            img.setImage(amazonService.getFile(img.getName()));
+        }
+        return  imageMetadata;
+    }
+
+    @ResponseStatus(value = HttpStatus.OK)
+    @DeleteMapping("/deleteImage")
+    public boolean deleteImage(@RequestParam int id) {
+        try{
+            String name = imageRepository.getOne(id).getName();
+            String deleted =  amazonService.deleteFile(name);
+            if(deleted.equals("SUCCESS")) {
+                imageRepository.deleteById(id);
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+       return false;
     }
 }
