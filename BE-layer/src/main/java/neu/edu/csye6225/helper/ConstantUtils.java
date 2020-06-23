@@ -1,8 +1,48 @@
 package neu.edu.csye6225.helper;
 
+import org.springframework.beans.factory.annotation.Value;
+
 public class ConstantUtils {
+
+    public String s3Bucket;
     public static final String END_POINT_URL = "https://s3.us-east-1.amazonaws.com";
-    public static final String ACCESS_KEY = "AKIAJQJHHQ56AQ6VONQQ";
-    public static final String SECRET_KEY = "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";
-    public static final String BUCKET_NAME = "webapp.arundathi.patil";
+//    @Value("${ACCESS_KEY}")
+    public static String ACCESS_KEY;
+//    @Value("${SECRET_KEY}")
+    public static String SECRET_KEY;
+//    @Value("${s3bucketname}")
+    public static String BUCKET_NAME;
+
+    public String getS3Bucket() {
+        return s3Bucket;
+    }
+
+    public void setS3Bucket(String s3Bucket) {
+        this.s3Bucket = s3Bucket;
+    }
+
+    public static String getAccessKey() {
+        return ACCESS_KEY;
+    }
+
+    public static void setAccessKey(String accessKey) {
+        ACCESS_KEY = accessKey;
+    }
+
+    public static String getSecretKey() {
+        return SECRET_KEY;
+    }
+
+    public static void setSecretKey(String secretKey) {
+        SECRET_KEY = secretKey;
+    }
+
+    public static String getBucketName() {
+        return BUCKET_NAME;
+    }
+
+    public static void setBucketName(String bucketName) {
+        BUCKET_NAME = bucketName;
+    }
 }
+
