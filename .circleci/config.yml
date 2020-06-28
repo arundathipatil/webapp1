@@ -27,7 +27,7 @@ jobs:
       - run:
           name: Zip Artifact
           command: |
-            echo "Hey, the current build number is ${CIRCLE_BUILD_NUM}"
+            echo "Hey Hi, the current build number is ${CIRCLE_BUILD_NUM}"
             mkdir -p artifact
             zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip webapp/BE-layer/target/BE-layer-1.0-SNAPSHOT.jar code-deploy-hook-scripts/*.sh *.yml
             mv csye6225-web-app-${CIRCLE_BUILD_NUM}.zip artifact
