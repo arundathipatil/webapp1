@@ -8,5 +8,5 @@ files:
 hooks:
   AfterInstall:
     - location: ./code-deploy-hook-scripts/afterInstall.sh
-      timeout: 180
+      timeout: 500
       runas: ubuntu
