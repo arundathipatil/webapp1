@@ -1,9 +1,50 @@
-version: 2.1
-
-orbs:
-  maven: circleci/maven@0.0.12
-
-workflows:
-  maven_test:
-    jobs:
-      - maven/test # checkout, build, test, and upload test results
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:9-jdk
+    steps:
+      - checkout
+      - run:
+          name: Install Packages
+          command: |
+            sudo apt-get update && sudo apt-get -y install wget zip unzip python3
+            python3 --version
+      - run:
+          name: Install pip
+          command: sudo apt install python3-pip
+      - run:
+          name: Install AWS CLI
+          command: |
+            pip3 --version
+            sudo pip3 install awscli
+            aws --version
+      - run:
+          name: Maven build
+          command: mvn clean install
+      - run:
+          name: Maven test
+          command: mvn test
+      - run:
+          name: Zip Artifact
+          command: |
+            echo "Hey Hello, the current build number is ${CIRCLE_BUILD_NUM}"
+            mkdir -p artifact
+            zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip BE-layer/target/BE-layer-1.0-SNAPSHOT.jar code-deploy-hook-scripts/*.sh *.yml
+            mv csye6225-web-app-${CIRCLE_BUILD_NUM}.zip artifact
+            cd artifact
+            ls -al
+      - run:
+          name: Upload Artifacts to S3
+          command: |
+            aws s3 sync artifact s3://${BUCKET_NAME}
+      - run:
+          name: Make CodeDeploy API call
+          command: |
+            echo "Calling CodeDeploy"
+            aws deploy create-deployment --application-name csye6225-webapp \
+                        --deployment-config-name CodeDeployDefault.AllAtOnce \
+                        --deployment-group-name csye6225-webapp-deployment \
+                        --description "CSYE6255 - CodeDeploy" \
+                        --s3-location bucket=${BUCKET_NAME},key=csye6225-web-app-${CIRCLE_BUILD_NUM}.zip,bundleType=zip \
+                        --region us-east-1 \
+                        --output json
