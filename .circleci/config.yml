@@ -1,9 +1,7 @@
-version: 2.1
-
 jobs:
   build:
     docker:
-      -image: circleci/openjdk:14-jdk
+      - image: circleci/openjdk:14-jdk
     steps:
       - checkout
       - run:
@@ -11,6 +9,9 @@ jobs:
           command: |
             sudo apt-get update && sudo apt-get -y install wget zip unzip python3
             python3 --version
+      - run:
+          name: Install pip
+          command: sudo apt install python3-pip
       - run:
           name: Install AWS CLI
           command: |
@@ -26,24 +27,24 @@ jobs:
       - run:
           name: Zip Artifact
           command: |
-            echo "Hey all, current build number is ${CIRCLE_BUILD_NUM}"
+            echo "Hey all, the current build number is ${CIRCLE_BUILD_NUM}"
             mkdir -p artifact
             zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip webapp/BE-layer/target/BE-layer-1.0-SNAPSHOT.jar code-deploy-hook-scripts/*.sh *.yml
             mv csye6225-web-app-${CIRCLE_BUILD_NUM}.zip artifact
             cd artifact
             ls -al
       - run:
-          name: Upload Artifacts to S3 Bucket
+          name: Upload Artifacts to S3
           command: |
             aws s3 sync artifact s3://${BUCKET_NAME}
-            - run:
-                name: Make CodeDeploy API call
-                command: |
-                  echo "Welcome CodeDeploy"
-                  aws deploy create-deployment --application-name csye6225-webapp \
-                              --deployment-config-name CodeDeployDefault.AllAtOnce \
-                              --deployment-group-name csye6225-webapp-deployment \
-                              --description "csye6255 - codeDeploy" \
-                              --s3-location bucket=${BUCKET_NAME},key=csye6225-web-app-${CIRCLE_BUILD_NUM}.zip,bundleType=zip \
-                              --region us-east-1 \
-                              --output json
+      - run:
+          name: Make CodeDeploy API call
+          command: |
+            echo "Welcome CodeDeploy"
+            aws deploy create-deployment --application-name csye6225-webapp \
+                        --deployment-config-name CodeDeployDefault.AllAtOnce \
+                        --deployment-group-name csye6225-webapp-deployment \
+                        --description "CSYE6255 - CodeDeploy" \
+                        --s3-location bucket=${BUCKET_NAME},key=csye6225-web-app-${CIRCLE_BUILD_NUM}.zip,bundleType=zip \
+                        --region us-east-1 \
+                        --output json
