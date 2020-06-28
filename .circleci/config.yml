@@ -29,7 +29,7 @@ jobs:
           command: |
             echo "Hey Hello, the current build number is ${CIRCLE_BUILD_NUM}"
             mkdir -p artifact
-            zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip webapp/BE-layer/target/BE-layer-1.0-SNAPSHOT.jar code-deploy-hook-scripts/*.sh *.yml
+            zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip BE-layer/target/BE-layer-1.0-SNAPSHOT.jar code-deploy-hook-scripts/*.sh *.yml
             mv csye6225-web-app-${CIRCLE_BUILD_NUM}.zip artifact
             cd artifact
             ls -al
