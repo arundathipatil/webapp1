@@ -28,6 +28,10 @@ jobs:
           name: Zip Artifact
           command: |
             echo "Hey Hello, the current build number is ${CIRCLE_BUILD_NUM}"
+            echo "Current directory"
+            pwd
+            echo "cureent directory contains"
+            ls -al
             mkdir -p artifact
             echo "Changing directory to artifact"
             cd artifact
@@ -35,9 +39,7 @@ jobs:
             cp ../*.yml .
             echo "Copying scripts file to the artifact directory"
             cp ../code-deploy-hook-scripts/*.sh .
-            echo "Copying json file to the artifact directory"
-            cp ../BE-layer/src/main/resources/*.json .
-            echo "Copying jar file to the artifact directory"
+            echo "Copying jar file from BE-layer/target/BE-layer-1.0-SNAPSHOT.jar to the artifact directory"
             cp ../BE-layer/target/BE-layer-1.0-SNAPSHOT.jar .
             echo "The directory contents are "
             ls -ltr
