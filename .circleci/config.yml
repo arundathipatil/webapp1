@@ -28,15 +28,36 @@ jobs:
           name: Zip Artifact
           command: |
             echo "Hey Hello, the current build number is ${CIRCLE_BUILD_NUM}"
-            mkdir -p artifact
-            zip -r csye6225-web-app-${CIRCLE_BUILD_NUM}.zip BE-layer/target/BE-layer-1.0-SNAPSHOT.jar code-deploy-hook-scripts/*.sh *.yml
-            mv csye6225-web-app-${CIRCLE_BUILD_NUM}.zip artifact
-            cd artifact
+            echo "Current directory"
+            pwd
+            echo "cureent directory contains"
             ls -al
+            echo "Creating artifact directory"
+            mkdir -p artifact
+            echo "Changing directory to artifact"
+            cd artifact
+            echo "Copying yml files to the artifact directory"
+            cp ../*.yml .
+            echo "Copying scripts file to the artifact directory"
+            cp ../code-deploy-hook-scripts/*.sh .
+            echo "Copying jar file from BE-layer/target/BE-layer-1.0-SNAPSHOT.jar to the artifact directory"
+            cp ../BE-layer/target/BE-layer-1.0-SNAPSHOT.jar .
+            echo "The directory contents are "
+            ls -ltr
+            echo "Compressing files in the artifact directory"
+            zip -r csye6255-webapp-${CIRCLE_BUILD_NUM}.zip .
+            ls -ltr
+            pwd
+            echo "Inside root directory"
+            cd ..
+            pwd
+            ls -ltr
       - run:
           name: Upload Artifacts to S3
           command: |
-            aws s3 sync artifact s3://${BUCKET_NAME}
+            echo "Uploading artifacts to s3 bucket ${BUCKET_NAME}"
+            cd artifact
+            aws s3 cp csye6255-webapp-${CIRCLE_BUILD_NUM}.zip s3://${BUCKET_NAME}
       - run:
           name: Make CodeDeploy API call
           command: |
@@ -45,6 +66,6 @@ jobs:
                         --deployment-config-name CodeDeployDefault.AllAtOnce \
                         --deployment-group-name csye6225-webapp-deployment \
                         --description "CSYE6255 - CodeDeploy" \
-                        --s3-location bucket=${BUCKET_NAME},key=csye6225-web-app-${CIRCLE_BUILD_NUM}.zip,bundleType=zip \
+                        --s3-location bucket=${BUCKET_NAME},key=csye6255-webapp-${CIRCLE_BUILD_NUM}.zip,bundleType=zip \
                         --region us-east-1 \
                         --output json

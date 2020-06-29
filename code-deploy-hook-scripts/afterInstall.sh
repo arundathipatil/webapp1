@@ -7,5 +7,4 @@ sudo chmod +x BE-layer-1.0-SNAPSHOT.jar
 kill -9 $(ps -ef|grep BE-layer-1.0 | grep -v grep | awk '{print $2}')
 
 source /etc/profile.d/envvariable.sh
-#Running application and appending logs
-java -jar BE-layer-1.0-SNAPSHOT.jar
+nohup java -jar BE-layer-1.0-SNAPSHOT.jar > /home/ubuntu/webapp.log 2> /home/ubuntu/webapp.log < /home/ubuntu/webapp.log &

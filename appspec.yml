@@ -2,11 +2,11 @@ version: 0.0
 os: linux
 
 files:
-  - source:  ./BE-layer/target/BE-layer-1.0-SNAPSHOT.jar
+  - source:  /
     destination: /home/ubuntu/webapp/
 
 hooks:
   AfterInstall:
-    - location: ./code-deploy-hook-scripts/afterInstall.sh
-      timeout: 500
+    - location: ./afterInstall.sh
+      timeout: 180
       runas: ubuntu
