@@ -4,4 +4,4 @@ sudo chown -R ubuntu:ubuntu /home/ubuntu/*
 sudo chmod +x BE-layer-1.0-SNAPSHOT.jar
 
 #Kill application if already running
-kill -9 $(ps -ef|grep demo-0.0.1 | grep -v grep | awk '{print $2}')
+sudo kill -9 $(ps -ef|grep BE-layer-1.0 | grep -v grep | awk '{print $2}')
