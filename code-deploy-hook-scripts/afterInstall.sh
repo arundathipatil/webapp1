@@ -6,6 +6,4 @@ sudo chmod +x BE-layer-1.0-SNAPSHOT.jar
 #Kill application if already running
 kill -9 $(ps -ef|grep BE-layer-1.0 | grep -v grep | awk '{print $2}')
 
-source /etc/profile.d/envvariable.sh
-#Running application and appending logs
-java -jar BE-layer-1.0-SNAPSHOT.jar
+#source /etc/profile.d/envvariable.sh
