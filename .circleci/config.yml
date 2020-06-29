@@ -32,6 +32,7 @@ jobs:
             pwd
             echo "cureent directory contains"
             ls -al
+            echo "Creating artifact directory"
             mkdir -p artifact
             echo "Changing directory to artifact"
             cd artifact
@@ -54,7 +55,9 @@ jobs:
       - run:
           name: Upload Artifacts to S3
           command: |
-            aws s3 sync artifact s3://${BUCKET_NAME}
+            echo "Uploading artifacts to s3 bucket ${BUCKET_NAME}"
+            cd artifact
+            aws s3 cp csye6255-webapp-${CIRCLE_BUILD_NUM}.zip s3://${BUCKET_NAME}
       - run:
           name: Make CodeDeploy API call
           command: |
