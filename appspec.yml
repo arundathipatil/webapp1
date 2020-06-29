@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 
 files:
-  - source:  ./BE-layer/target/BE-layer-1.0-SNAPSHOT.jar
+  - source:  /
     destination: /home/ubuntu/webapp/
 
 hooks:
