@@ -10,7 +10,3 @@ hooks:
     - location: ./code-deploy-hook-scripts/afterInstall.sh
       timeout: 180
       runas: ubuntu
-  ApplicationStart:
-    - location: ./code-deploy-hook-scripts/applicationStart.sh
-      timeout: 180
-      runas: ubuntu
