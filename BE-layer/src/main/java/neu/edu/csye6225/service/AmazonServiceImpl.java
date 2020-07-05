@@ -56,6 +56,7 @@ public class AmazonServiceImpl implements AmazonService{
             jsonobj.put("status", "Success");
             jsonobj.put("imageURL", fileURl);
             jsonobj.put("message", "FIle upload Suceess");
+            file.delete();
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
@@ -103,6 +104,7 @@ public class AmazonServiceImpl implements AmazonService{
             fis.read(bytes);
             String encodeBase64 = Base64.getEncoder().encodeToString(bytes);
             String image = "data:"+extension+";base64,"+encodeBase64;
+            f.delete();
             return image;
 
 
