@@ -40,40 +40,66 @@ public class UserController {
 
     @PostMapping("/registerUser")
     public @ResponseBody User registerNewUser(@RequestBody User user) {
+        logger.info("Info:Calling registerNewUserApi");
+        long begin = System.currentTimeMillis();
+        stasDClient.incrementCounter("registerNewUSerApi");
         User u = null;
         try {
-            logger.debug("this is debug message");
-            logger.info("Info:Calling registerNewUserApi");
-            stasDClient.incrementCounter("registerNewUSerApi");
-            long begin = System.currentTimeMillis();
+            long beginDB = System.currentTimeMillis();
             u = userRespository.getUserByEmail(user.getEmail());
             long end = System.currentTimeMillis();
-            long timeTaken = end-begin;
+            long timeTaken = end - begin;
+            long timeTakenByDBQuery = end - beginDB;
+            stasDClient.recordExecutionTime("registerNewUserDBQueryTime", timeTakenByDBQuery);
             logger.info("TIme taken by registerNewUser API " + timeTaken + "ms");
             stasDClient.recordExecutionTime("registerNewUserApiTime", timeTaken);
         } catch (Exception e) {
             String hashedVal = Hashing.hashPassword(user.getPassword());
             user.setPassword(hashedVal);
-            return userRespository.save(user);
+            long end = System.currentTimeMillis();
+            long timeTaken = end - begin;
+            logger.info("TIme taken by registerNewUser API " + timeTaken + "ms");
+            stasDClient.recordExecutionTime("registerNewUserApiTime", timeTaken);
+            long beginDB = System.currentTimeMillis();
+            User user1 = userRespository.save(user);
+            long endDB = System.currentTimeMillis();
+            long timeTakenByDBQuery = endDB - beginDB;
+            stasDClient.recordExecutionTime("registerNewUserDBQueryTime", timeTakenByDBQuery);
+//            return userRespository.save(user);
+            return user1;
         }
         return null;
     }
 
     @PostMapping("/updateUser")
     public @ResponseBody int updateUserDetails(@RequestBody User user) {
+        logger.info("Info:Calling updateUserApi");
+        stasDClient.incrementCounter("updateUserApi");
+        long begin = System.currentTimeMillis();
         userRespository.updateUser(user.getFirstName(), user.getLastName(), user.getEmail());
+        long end = System.currentTimeMillis();
+        long timeTaken = end - begin;
+        logger.info("TIme taken by updateUserApi API " + timeTaken + "ms");
+        stasDClient.recordExecutionTime("updateUserApiTime", timeTaken);
         return 1;
     }
 
     @PostMapping("/changePassword")
     public @ResponseBody boolean changePassword(@RequestBody Changepwd pwd) {
         User u = null;
+        logger.info("Info:Calling changePasswordApi");
+        stasDClient.incrementCounter("changePasswordApi");
+        long begin = System.currentTimeMillis();
         try {
             u = userRespository.getUserByEmail(pwd.getEmail());
             System.out.println(u.getPassword());
             if(u != null && u.getPassword().equals(Hashing.hashPassword(pwd.getCurrentPassword())))  {
                 String hashedValPWD = Hashing.hashPassword(pwd.getNewPassword());
                 userRespository.changePassword(hashedValPWD, pwd.getEmail());
+                long end = System.currentTimeMillis();
+                long timeTaken = end - begin;
+                logger.info("TIme taken by changePasswordApi API " + timeTaken + "ms");
+                stasDClient.recordExecutionTime("changePasswordApiTime", timeTaken);
                 return true;
             } else {
                 return false;
@@ -92,12 +118,23 @@ public class UserController {
 
     @GetMapping("/userDetails")
     public User getUserDetails(@RequestParam String email) {
+        logger.info("Info:Calling userDetailsApi");
+        stasDClient.incrementCounter("userDetailsApi");
+        long begin = System.currentTimeMillis();
         User u = null;
         try {
            u =  userRespository.getUserByEmail(email);
+            long end = System.currentTimeMillis();
+            long timeTaken = end - begin;
+            logger.info("TIme taken by userDetailsApi " + timeTaken + "ms");
+            stasDClient.recordExecutionTime("userDetailsApiTime", timeTaken);
            return u;
         } catch (Exception e) {
             u.setLastName(e.getMessage());
+            long end = System.currentTimeMillis();
+            long timeTaken = end - begin;
+            logger.info("TIme taken by userDetails API " + timeTaken + "ms");
+            stasDClient.recordExecutionTime("userDetailsApiTime", timeTaken);
             return u;
         }
     }
@@ -105,17 +142,32 @@ public class UserController {
     @GetMapping("/login")
     public boolean login(@RequestParam String email, @RequestParam String pwd) {
         User u = null;
+        logger.info("Info:Calling loginApi");
+        stasDClient.incrementCounter("loginApi");
+        long begin = System.currentTimeMillis();
         try {
           System.out.println(userRespository.getUserByEmail(email));
           u = userRespository.getUserByEmail(email);
           System.out.println(u.getPassword());
           if(u != null && u.getPassword().equals(Hashing.hashPassword(pwd)))  {
+              long end = System.currentTimeMillis();
+              long timeTaken = end - begin;
+              logger.info("TIme taken by loginApi " + timeTaken + "ms");
+              stasDClient.recordExecutionTime("loginApiTime", timeTaken);
               return true;
           } else {
+              long end = System.currentTimeMillis();
+              long timeTaken = end - begin;
+              logger.info("TIme taken by loginApi " + timeTaken + "ms");
+              stasDClient.recordExecutionTime("loginApiTime", timeTaken);
               return false;
           }
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            long end = System.currentTimeMillis();
+            long timeTaken = end - begin;
+            logger.info("TIme taken by loginApi " + timeTaken + "ms");
+            stasDClient.recordExecutionTime("loginApiTime", timeTaken);
             u.setFirstName(e.getMessage());
             return false;
         }
@@ -132,23 +184,40 @@ public class UserController {
         //        String email = book.getUser().getEmail();
         //        User user = this.getUserDetails(email);
         //        book.setUser(getUserDetails(email));
+        logger.info("Info:Calling addBookApi");
+        stasDClient.incrementCounter("addBookApi");
+        long begin = System.currentTimeMillis();
         Book b = bookRepository.findByisbnAndUserEmail(book.getIsbn(), book.getUserEmail());
         if(b !=null) {
             String error = "Book already exists. Try editing the existing book";
             throw new Exception(error);
         };
+        long end = System.currentTimeMillis();
+        long timeTaken = end - begin;
+        logger.info("TIme taken by addBookApi " + timeTaken + "ms");
+        stasDClient.recordExecutionTime("addBookApiTime", timeTaken);
         return bookRepository.save(book);
     }
 
     @GetMapping(path="/getAllBooksByEmail")
     public List<Book> getAllBooksByEmail(@RequestParam String email) {
+        logger.info("Info:Calling getAllBooksByEmailApi");
+        stasDClient.incrementCounter("getAllBooksByEmailApi");
+        long begin = System.currentTimeMillis();
+        long end = System.currentTimeMillis();
+        long timeTaken = end - begin;
+        logger.info("TIme taken by getAllBooksByEmailApi " + timeTaken + "ms");
+        stasDClient.recordExecutionTime("getAllBooksByEmailApiTime", timeTaken);
+
         return bookRepository.getAllByUserEmail(email);
     }
 
     @PostMapping("/updateBookDetails")
     public @ResponseBody int updateBookDetails(@RequestBody Book book) {
         Book b = bookRepository.findById(book.getId());
-
+        logger.info("Info:Calling updateBookDetailsApi");
+        stasDClient.incrementCounter("updateBookDetailsApi");
+        long begin = System.currentTimeMillis();
         try {
             Cart c = cartRepository.findBySellersemailAndIsbn(book.getUserEmail(), book.getIsbn());
             int cartId = c.getId();
@@ -162,6 +231,10 @@ public class UserController {
                     book.getIsbn(),
                     book.getUserEmail(),
                     book.getId());
+            long end = System.currentTimeMillis();
+            long timeTaken = end - begin;
+            logger.info("TIme taken by updateBookDetailsApi " + timeTaken + "ms");
+            stasDClient.recordExecutionTime("updateBookDetailsApiTime", timeTaken);
 
             return 1;
         } catch (Exception e) {
@@ -174,6 +247,10 @@ public class UserController {
                     book.getIsbn(),
                     book.getUserEmail(),
                     book.getId());
+            long end = System.currentTimeMillis();
+            long timeTaken = end - begin;
+            logger.info("TIme taken by updateBookDetailsApi " + timeTaken + "ms");
+            stasDClient.recordExecutionTime("updateBookDetailsApiTime", timeTaken);
 
             return 1;
         }
@@ -183,17 +260,31 @@ public class UserController {
     @DeleteMapping("/delete")
     public void deleteBook(@RequestParam int id) {
 //        bookRepository.findAll(Sort.by(Sort.Direction.ASC, "price"));
+        logger.info("Info:Calling deleteBookApi");
+        stasDClient.incrementCounter("deleteBookApi");
+        long begin = System.currentTimeMillis();
         Book bookToDelete = bookRepository.findById(id);
         Cart cart = cartRepository.findBySellersemailAndIsbn(bookToDelete.getUserEmail(), bookToDelete.getIsbn());
        if(cart !=null) { cartRepository.deleteById(cart.getId()); };
         bookRepository.deleteById(id);
+        long end = System.currentTimeMillis();
+        long timeTaken = end - begin;
+        logger.info("TIme taken by deleteBookApi " + timeTaken + "ms");
+        stasDClient.recordExecutionTime("deleteBookApiTime", timeTaken);
     }
 
     @GetMapping("/getBooksToBuy")
     public @ResponseBody List<Book> getBooksToBy(@RequestParam String email) {
+        logger.info("Info:Calling getBooksToBuyApi");
+        stasDClient.incrementCounter("getBooksToBuyApi");
+        long begin = System.currentTimeMillis();
 
         Comparator<Book> compareByNameAndPrice = Comparator.comparing(Book::getTitle).thenComparing(Book::getPrice);
 
+        long end = System.currentTimeMillis();
+        long timeTaken = end - begin;
+        logger.info("TIme taken by getBooksToBuyApi " + timeTaken + "ms");
+        stasDClient.recordExecutionTime("getBooksToBuyApiTime", timeTaken);
       return bookRepository.findAll(Sort.by(Sort.Direction.ASC, "price"))
                                 .stream()
                                 .filter(a-> !a.getUserEmail().equals(email))
@@ -209,12 +300,23 @@ public class UserController {
      */
     @PostMapping("/addBookToCart")
     public @ResponseBody Cart addBookToCart(@RequestBody Cart cart) {
+        logger.info("Info:Calling addBookToCartApi");
+        stasDClient.incrementCounter("addBookToCartApi");
+        long begin = System.currentTimeMillis();
         Cart cartItem = cartRepository.findBySellersemailAndIsbn(cart.getSellersemail(), cart.getIsbn());
         if(cartItem == null) {
+            long end = System.currentTimeMillis();
+            long timeTaken = end - begin;
+            logger.info("TIme taken by addBookToCartApi " + timeTaken + "ms");
+            stasDClient.recordExecutionTime("addBookToCartApiTime", timeTaken);
             return cartRepository.save(cart);
         } else {
             cartRepository.updateCart(cart.getQuantity(), cart.getPrice(), cart.getSellersemail(), cart.getIsbn(), cart.getBuyersemail());
             Cart item= new Cart();
+            long end = System.currentTimeMillis();
+            long timeTaken = end - begin;
+            logger.info("TIme taken by addBookToCartApi " + timeTaken + "ms");
+            stasDClient.recordExecutionTime("addBookToCartApiTime", timeTaken);
             return item;
         }
     }
@@ -222,19 +324,33 @@ public class UserController {
 
     @GetMapping("/getCartItems")
     public @ResponseBody List<Cart> getCartItems(@RequestParam String email) {
+        logger.info("Info:Calling getCartItemsApi");
+        stasDClient.incrementCounter("getCartItemsApi");
+        long begin = System.currentTimeMillis();
        List<Book> booksInCart = new ArrayList<>();
        List<Cart> cartList = cartRepository.findAllByBuyersemail(email);
 
         for (Cart cartItem : cartList) {
             booksInCart.add(bookRepository.findByisbnAndUserEmail(cartItem.getIsbn(), cartItem.getBuyersemail()));
         }
+        long end = System.currentTimeMillis();
+        long timeTaken = end - begin;
+        logger.info("TIme taken by getCartItemsApi " + timeTaken + "ms");
+        stasDClient.recordExecutionTime("getCartItemsApiTime", timeTaken);
         return cartList;
     }
 
     @ResponseStatus(value = HttpStatus.OK)
     @DeleteMapping("/deleteItemFromCart")
     public void deleteCartItem(@RequestParam int id) {
+        logger.info("Info:Calling deleteItemFromCartApi");
+        stasDClient.incrementCounter("deleteItemFromCartApi");
+        long begin = System.currentTimeMillis();
         cartRepository.deleteById(id);
+        long end = System.currentTimeMillis();
+        long timeTaken = end - begin;
+        logger.info("TIme taken by deleteItemFromCartApi " + timeTaken + "ms");
+        stasDClient.recordExecutionTime("deleteItemFromCartApiTime", timeTaken);
     }
 
     @PostMapping("/uploadPhoto")
@@ -244,6 +360,9 @@ public class UserController {
 
     @GetMapping("/getPhotosByBookISBNAndEmail")
     public List<Image> getPhoto(@RequestParam String userEmail, @RequestParam String isbn) {
+        logger.info("Info:Calling bookViewed-getPhotosByBookISBNAndEmailAPI");
+        stasDClient.incrementCounter("bookViewed-getPhotosByBookISBNAndEmailAPI");
+        long begin = System.currentTimeMillis();
         List<String> photoList = new ArrayList<>();
 
         List<Image> imageMetadata = new ArrayList<>();
@@ -253,17 +372,28 @@ public class UserController {
         for (Image img: imageMetadata){
             img.setImage(amazonService.getFile(img.getName()));
         }
+        long end = System.currentTimeMillis();
+        long timeTaken = end - begin;
+        logger.info("TIme taken by bookViewed-getPhotosByBookISBNAndEmailApi " + timeTaken + "ms");
+        stasDClient.recordExecutionTime("bookViewed-getPhotosByBookISBNAndEmailTime", timeTaken);
         return  imageMetadata;
     }
 
     @ResponseStatus(value = HttpStatus.OK)
     @DeleteMapping("/deleteImage")
     public boolean deleteImage(@RequestParam int id) {
+        logger.info("Info:Calling deleteImageApi");
+        stasDClient.incrementCounter("deleteImageApi");
+        long begin = System.currentTimeMillis();
         try{
             String name = imageRepository.getOne(id).getName();
             String deleted =  amazonService.deleteFile(name);
             if(deleted.equals("SUCCESS")) {
                 imageRepository.deleteById(id);
+                long end = System.currentTimeMillis();
+                long timeTaken = end - begin;
+                logger.info("TIme taken by deleteImageApi " + timeTaken + "ms");
+                stasDClient.recordExecutionTime("deleteImageApiTime", timeTaken);
                 return true;
             }
         } catch (Exception e) {
