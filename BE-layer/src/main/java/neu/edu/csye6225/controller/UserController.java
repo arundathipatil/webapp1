@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import com.timgroup.statsd.StatsDClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,12 +33,24 @@ public class UserController {
     private AmazonService  amazonService;
     @Autowired
     private ImageRepository imageRepository;
+    @Autowired
+    private StatsDClient stasDClient;
+
+    private Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @PostMapping("/registerUser")
     public @ResponseBody User registerNewUser(@RequestBody User user) {
         User u = null;
         try {
+            logger.debug("this is debug message");
+            logger.info("Info:Calling registerNewUserApi");
+            stasDClient.incrementCounter("registerNewUSerApi");
+            long begin = System.currentTimeMillis();
             u = userRespository.getUserByEmail(user.getEmail());
+            long end = System.currentTimeMillis();
+            long timeTaken = end-begin;
+            logger.info("TIme taken by registerNewUser API " + timeTaken + "ms");
+            stasDClient.recordExecutionTime("registerNewUserApiTime", timeTaken);
         } catch (Exception e) {
             String hashedVal = Hashing.hashPassword(user.getPassword());
             user.setPassword(hashedVal);
