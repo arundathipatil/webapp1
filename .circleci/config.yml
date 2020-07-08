@@ -38,8 +38,10 @@ jobs:
             cd artifact
             echo "Copying yml files to the artifact directory"
             cp ../*.yml .
-            echo "Copying scripts file to the artifact directory"
+            echo "Copying code deploy hook scripts file to the artifact directory"
             cp ../code-deploy-hook-scripts/*.sh .
+            echo "Copying scripts to artifact directory"
+            cp ../scripts/*.service .
             echo "Copying cloud watch configuration file"
             cp ../cloud-watch/*.json .
             echo "Copying jar file from BE-layer/target/BE-layer-1.0-SNAPSHOT.jar to the artifact directory"
