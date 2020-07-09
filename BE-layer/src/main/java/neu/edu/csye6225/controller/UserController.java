@@ -206,12 +206,12 @@ public class UserController {
         logger.info("Info:Calling getAllBooksByEmailApi");
         stasDClient.incrementCounter("getAllBooksByEmailApi");
         long begin = System.currentTimeMillis();
+        List<Book> bookList = bookRepository.getAllByUserEmail(email);
         long end = System.currentTimeMillis();
         long timeTaken = end - begin;
         logger.info("TIme taken by getAllBooksByEmailApi " + timeTaken + "ms");
         stasDClient.recordExecutionTime("DB-getAllBooksByEmailApiTime", timeTaken);
-
-        return bookRepository.getAllByUserEmail(email);
+        return bookList;
     }
 
     @PostMapping("/updateBookDetails")
@@ -283,16 +283,17 @@ public class UserController {
 
         Comparator<Book> compareByNameAndPrice = Comparator.comparing(Book::getTitle).thenComparing(Book::getPrice);
 
+        List<Book> bookList = bookRepository.findAll(Sort.by(Sort.Direction.ASC, "price"))
+                .stream()
+                .filter(a-> !a.getUserEmail().equals(email))
+                .filter(a -> a.getQuantity() !=0)
+                .sorted(compareByNameAndPrice)
+                .collect(Collectors.toList());
         long end = System.currentTimeMillis();
         long timeTaken = end - begin;
         logger.info("TIme taken by getBooksToBuyApi " + timeTaken + "ms");
         stasDClient.recordExecutionTime("DB-getBooksToBuyApiTime", timeTaken);
-      return bookRepository.findAll(Sort.by(Sort.Direction.ASC, "price"))
-                                .stream()
-                                .filter(a-> !a.getUserEmail().equals(email))
-                                .filter(a -> a.getQuantity() !=0)
-                                .sorted(compareByNameAndPrice)
-                                .collect(Collectors.toList());
+        return bookList;
 
     }
 
