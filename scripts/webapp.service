@@ -8,7 +8,7 @@ ExecStart=/usr/bin/java -jar /home/ubuntu/webapp/BE-layer-1.0-SNAPSHOT.jar
 SuccessExitStatus=143
 Restart=always
 RestartSec=5
-StandardOutput=append:/home/ubuntu/webapp.log
+StandardOutput=file:/home/ubuntu/webapp.log
 
 [Install]
 WantedBy=multi-user.target
