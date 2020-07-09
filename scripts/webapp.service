@@ -1,5 +1,6 @@
 [Unit]
 Description=webapp
+After=syslog.target
 
 [Service]
 EnvironmentFile=/etc/environment
