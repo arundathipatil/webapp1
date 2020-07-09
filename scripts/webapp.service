@@ -1,6 +1,5 @@
 [Unit]
 Description=webapp
-After=syslog.target
 
 [Service]
 EnvironmentFile=/etc/environment
@@ -9,7 +8,7 @@ ExecStart=/usr/bin/java -jar /home/ubuntu/webapp/BE-layer-1.0-SNAPSHOT.jar
 SuccessExitStatus=143
 Restart=always
 RestartSec=5
-StandardOutput=file:/home/ubuntu/webapp.log
+StandardOutput=append:/home/ubuntu/webapp.log
 
 [Install]
 WantedBy=multi-user.target
