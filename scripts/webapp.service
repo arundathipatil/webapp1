@@ -5,12 +5,12 @@ After=syslog.target
 [Service]
 EnvironmentFile=/etc/environment
 User=ubuntu
-ExecStartPre=-/home/ubuntu/rm -rf webapp.log
+ExecStartPre=-/home/ubuntu/touch webapp.log
 ExecStart=/usr/bin/java -jar /home/ubuntu/webapp/BE-layer-1.0-SNAPSHOT.jar
 SuccessExitStatus=143
 Restart=always
 RestartSec=5
-StandardOutput=file:/home/ubuntu/webapp.log
+StandardOutput=append:/home/ubuntu/webapp.log
 
 [Install]
 WantedBy=multi-user.target
