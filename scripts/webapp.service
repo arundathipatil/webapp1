@@ -5,7 +5,7 @@ After=syslog.target
 [Service]
 EnvironmentFile=/etc/environment
 User=ubuntu
-ExecStartPre= rm -rf /home/ubuntu/webapp.log
+ExecStartPre=/home/ubuntu/rm -rf webapp.log
 ExecStart=/usr/bin/java -jar /home/ubuntu/webapp/BE-layer-1.0-SNAPSHOT.jar
 SuccessExitStatus=143
 Restart=always
