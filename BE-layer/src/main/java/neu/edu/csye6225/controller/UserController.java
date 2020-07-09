@@ -50,7 +50,7 @@ public class UserController {
             long end = System.currentTimeMillis();
             long timeTaken = end - begin;
             long timeTakenByDBQuery = end - beginDB;
-            stasDClient.recordExecutionTime("registerNewUserDBQueryTime", timeTakenByDBQuery);
+            stasDClient.recordExecutionTime("DB-registerNewUserDBQueryTime", timeTakenByDBQuery);
             logger.info("TIme taken by registerNewUser API " + timeTaken + "ms");
             stasDClient.recordExecutionTime("registerNewUserApiTime", timeTaken);
         } catch (Exception e) {
@@ -64,7 +64,7 @@ public class UserController {
             User user1 = userRespository.save(user);
             long endDB = System.currentTimeMillis();
             long timeTakenByDBQuery = endDB - beginDB;
-            stasDClient.recordExecutionTime("registerNewUserDBQueryTime", timeTakenByDBQuery);
+            stasDClient.recordExecutionTime("DB-registerNewUserDBQueryTime", timeTakenByDBQuery);
 //            return userRespository.save(user);
             return user1;
         }
@@ -80,7 +80,7 @@ public class UserController {
         long end = System.currentTimeMillis();
         long timeTaken = end - begin;
         logger.info("TIme taken by updateUserApi API " + timeTaken + "ms");
-        stasDClient.recordExecutionTime("updateUserApiTime", timeTaken);
+        stasDClient.recordExecutionTime("DB-updateUserApiTime", timeTaken);
         return 1;
     }
 
@@ -99,7 +99,7 @@ public class UserController {
                 long end = System.currentTimeMillis();
                 long timeTaken = end - begin;
                 logger.info("TIme taken by changePasswordApi API " + timeTaken + "ms");
-                stasDClient.recordExecutionTime("changePasswordApiTime", timeTaken);
+                stasDClient.recordExecutionTime("DB-changePasswordApiTime", timeTaken);
                 return true;
             } else {
                 return false;
@@ -127,14 +127,14 @@ public class UserController {
             long end = System.currentTimeMillis();
             long timeTaken = end - begin;
             logger.info("TIme taken by userDetailsApi " + timeTaken + "ms");
-            stasDClient.recordExecutionTime("userDetailsApiTime", timeTaken);
+            stasDClient.recordExecutionTime("DB-userDetailsApiTime", timeTaken);
            return u;
         } catch (Exception e) {
             u.setLastName(e.getMessage());
             long end = System.currentTimeMillis();
             long timeTaken = end - begin;
             logger.info("TIme taken by userDetails API " + timeTaken + "ms");
-            stasDClient.recordExecutionTime("userDetailsApiTime", timeTaken);
+            stasDClient.recordExecutionTime("DB-userDetailsApiTime", timeTaken);
             return u;
         }
     }
@@ -192,11 +192,13 @@ public class UserController {
             String error = "Book already exists. Try editing the existing book";
             throw new Exception(error);
         };
+        Book savedBook = new Book();
+        savedBook = bookRepository.save(book);
         long end = System.currentTimeMillis();
         long timeTaken = end - begin;
         logger.info("TIme taken by addBookApi " + timeTaken + "ms");
-        stasDClient.recordExecutionTime("addBookApiTime", timeTaken);
-        return bookRepository.save(book);
+        stasDClient.recordExecutionTime("DB-addBookApiTime", timeTaken);
+        return savedBook;
     }
 
     @GetMapping(path="/getAllBooksByEmail")
@@ -207,7 +209,7 @@ public class UserController {
         long end = System.currentTimeMillis();
         long timeTaken = end - begin;
         logger.info("TIme taken by getAllBooksByEmailApi " + timeTaken + "ms");
-        stasDClient.recordExecutionTime("getAllBooksByEmailApiTime", timeTaken);
+        stasDClient.recordExecutionTime("DB-getAllBooksByEmailApiTime", timeTaken);
 
         return bookRepository.getAllByUserEmail(email);
     }
@@ -234,7 +236,7 @@ public class UserController {
             long end = System.currentTimeMillis();
             long timeTaken = end - begin;
             logger.info("TIme taken by updateBookDetailsApi " + timeTaken + "ms");
-            stasDClient.recordExecutionTime("updateBookDetailsApiTime", timeTaken);
+            stasDClient.recordExecutionTime("DB-updateBookDetailsApiTime", timeTaken);
 
             return 1;
         } catch (Exception e) {
@@ -250,7 +252,7 @@ public class UserController {
             long end = System.currentTimeMillis();
             long timeTaken = end - begin;
             logger.info("TIme taken by updateBookDetailsApi " + timeTaken + "ms");
-            stasDClient.recordExecutionTime("updateBookDetailsApiTime", timeTaken);
+            stasDClient.recordExecutionTime("DB-updateBookDetailsApiTime", timeTaken);
 
             return 1;
         }
@@ -270,7 +272,7 @@ public class UserController {
         long end = System.currentTimeMillis();
         long timeTaken = end - begin;
         logger.info("TIme taken by deleteBookApi " + timeTaken + "ms");
-        stasDClient.recordExecutionTime("deleteBookApiTime", timeTaken);
+        stasDClient.recordExecutionTime("DB-deleteBookApiTime", timeTaken);
     }
 
     @GetMapping("/getBooksToBuy")
@@ -284,7 +286,7 @@ public class UserController {
         long end = System.currentTimeMillis();
         long timeTaken = end - begin;
         logger.info("TIme taken by getBooksToBuyApi " + timeTaken + "ms");
-        stasDClient.recordExecutionTime("getBooksToBuyApiTime", timeTaken);
+        stasDClient.recordExecutionTime("DB-getBooksToBuyApiTime", timeTaken);
       return bookRepository.findAll(Sort.by(Sort.Direction.ASC, "price"))
                                 .stream()
                                 .filter(a-> !a.getUserEmail().equals(email))
@@ -316,7 +318,7 @@ public class UserController {
             long end = System.currentTimeMillis();
             long timeTaken = end - begin;
             logger.info("TIme taken by addBookToCartApi " + timeTaken + "ms");
-            stasDClient.recordExecutionTime("addBookToCartApiTime", timeTaken);
+            stasDClient.recordExecutionTime("DB-addBookToCartApiTime", timeTaken);
             return item;
         }
     }
@@ -336,7 +338,7 @@ public class UserController {
         long end = System.currentTimeMillis();
         long timeTaken = end - begin;
         logger.info("TIme taken by getCartItemsApi " + timeTaken + "ms");
-        stasDClient.recordExecutionTime("getCartItemsApiTime", timeTaken);
+        stasDClient.recordExecutionTime("DB-getCartItemsApiTime", timeTaken);
         return cartList;
     }
 
@@ -350,12 +352,20 @@ public class UserController {
         long end = System.currentTimeMillis();
         long timeTaken = end - begin;
         logger.info("TIme taken by deleteItemFromCartApi " + timeTaken + "ms");
-        stasDClient.recordExecutionTime("deleteItemFromCartApiTime", timeTaken);
+        stasDClient.recordExecutionTime("DB-deleteItemFromCartApiTime", timeTaken);
     }
 
     @PostMapping("/uploadPhoto")
     public @ResponseBody String uploadPhoto(@RequestPart(value = "file") MultipartFile multipartFile,@RequestParam(value = "bookId") String bookID, @RequestParam(value = "userId") String userId) {
-        return this.amazonService.uploadFile(multipartFile, bookID, userId);
+        logger.info("Info:Calling uploadPhototoS3");
+        stasDClient.incrementCounter("uploadPhototoS3Counter");
+        long begin = System.currentTimeMillis();
+        String isPhotoUploaded = this.amazonService.uploadFile(multipartFile, bookID, userId);
+        long end = System.currentTimeMillis();
+        long timeTaken = end - begin;
+        logger.info("TIme taken by uploadPhototoS3 API " + timeTaken + "ms");
+        stasDClient.recordExecutionTime("uploadPhototoS3Time", timeTaken);
+        return isPhotoUploaded;
     }
 
     @GetMapping("/getPhotosByBookISBNAndEmail")
@@ -375,7 +385,7 @@ public class UserController {
         long end = System.currentTimeMillis();
         long timeTaken = end - begin;
         logger.info("TIme taken by bookViewed-getPhotosByBookISBNAndEmailApi " + timeTaken + "ms");
-        stasDClient.recordExecutionTime("bookViewed-getPhotosByBookISBNAndEmailTime", timeTaken);
+        stasDClient.recordExecutionTime("S3bookViewed-getPhotosByBookISBNAndEmailTime", timeTaken);
         return  imageMetadata;
     }
 
@@ -393,7 +403,7 @@ public class UserController {
                 long end = System.currentTimeMillis();
                 long timeTaken = end - begin;
                 logger.info("TIme taken by deleteImageApi " + timeTaken + "ms");
-                stasDClient.recordExecutionTime("deleteImageApiTime", timeTaken);
+                stasDClient.recordExecutionTime("S3deleteImageApiTime", timeTaken);
                 return true;
             }
         } catch (Exception e) {
