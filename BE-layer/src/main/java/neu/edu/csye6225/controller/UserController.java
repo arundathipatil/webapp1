@@ -192,11 +192,13 @@ public class UserController {
             String error = "Book already exists. Try editing the existing book";
             throw new Exception(error);
         };
+        Book savedBook = new Book();
+        savedBook = bookRepository.save(book);
         long end = System.currentTimeMillis();
         long timeTaken = end - begin;
         logger.info("TIme taken by addBookApi " + timeTaken + "ms");
         stasDClient.recordExecutionTime("DB-addBookApiTime", timeTaken);
-        return bookRepository.save(book);
+        return savedBook;
     }
 
     @GetMapping(path="/getAllBooksByEmail")
@@ -356,13 +358,14 @@ public class UserController {
     @PostMapping("/uploadPhoto")
     public @ResponseBody String uploadPhoto(@RequestPart(value = "file") MultipartFile multipartFile,@RequestParam(value = "bookId") String bookID, @RequestParam(value = "userId") String userId) {
         logger.info("Info:Calling uploadPhototoS3");
-        stasDClient.incrementCounter("uploadPhototoS3");
+        stasDClient.incrementCounter("uploadPhototoS3Counter");
         long begin = System.currentTimeMillis();
+        String isPhotoUploaded = this.amazonService.uploadFile(multipartFile, bookID, userId);
         long end = System.currentTimeMillis();
         long timeTaken = end - begin;
         logger.info("TIme taken by uploadPhototoS3 API " + timeTaken + "ms");
-        stasDClient.recordExecutionTime("uploadPhototoS3", timeTaken);
-        return this.amazonService.uploadFile(multipartFile, bookID, userId);
+        stasDClient.recordExecutionTime("uploadPhototoS3Time", timeTaken);
+        return isPhotoUploaded;
     }
 
     @GetMapping("/getPhotosByBookISBNAndEmail")
