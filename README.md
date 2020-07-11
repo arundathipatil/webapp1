@@ -1,6 +1,6 @@
 # e-BookStore
 
-## Getting Started
+## Getting Started with webapp
 
 ### Prerequisites..
 	Git
