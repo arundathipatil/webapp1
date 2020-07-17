@@ -1,14 +1,11 @@
 package neu.edu.csye6225.controller;
 
 import neu.edu.csye6225.model.*;
-import neu.edu.csye6225.repository.CartRepository;
-import neu.edu.csye6225.repository.ImageRepository;
+import neu.edu.csye6225.repository.*;
 import neu.edu.csye6225.service.AmazonService;
 import neu.edu.csye6225.service.AmazonServiceImpl;
 import org.springframework.data.domain.Sort;
 import neu.edu.csye6225.helper.Hashing;
-import neu.edu.csye6225.repository.BookRepository;
-import neu.edu.csye6225.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +30,8 @@ public class UserController {
     private AmazonService  amazonService;
     @Autowired
     private ImageRepository imageRepository;
+    @Autowired
+    private UserSessionRepository userSessionRepository;
     @Autowired
     private StatsDClient stasDClient;
 
@@ -72,16 +71,20 @@ public class UserController {
     }
 
     @PostMapping("/updateUser")
-    public @ResponseBody int updateUserDetails(@RequestBody User user) {
-        logger.info("Info:Calling updateUserApi");
-        stasDClient.incrementCounter("updateUserApi");
-        long begin = System.currentTimeMillis();
-        userRespository.updateUser(user.getFirstName(), user.getLastName(), user.getEmail());
-        long end = System.currentTimeMillis();
-        long timeTaken = end - begin;
-        logger.info("TIme taken by updateUserApi API " + timeTaken + "ms");
-        stasDClient.recordExecutionTime("DB-updateUserApiTime", timeTaken);
-        return 1;
+    public @ResponseBody int updateUserDetails(@RequestBody User user) throws Exception {
+        if(isLoogedIn(user.getEmail())) {
+            logger.info("Info:Calling updateUserApi");
+            stasDClient.incrementCounter("updateUserApi");
+            long begin = System.currentTimeMillis();
+            userRespository.updateUser(user.getFirstName(), user.getLastName(), user.getEmail());
+            long end = System.currentTimeMillis();
+            long timeTaken = end - begin;
+            logger.info("TIme taken by updateUserApi API " + timeTaken + "ms");
+            stasDClient.recordExecutionTime("DB-updateUserApiTime", timeTaken);
+            return 1;
+        } else {
+            throw new Exception();
+        }
     }
 
     @PostMapping("/changePassword")
@@ -154,6 +157,7 @@ public class UserController {
               long timeTaken = end - begin;
               logger.info("TIme taken by loginApi " + timeTaken + "ms");
               stasDClient.recordExecutionTime("loginApiTime", timeTaken);
+              setUserSession(email);
               return true;
           } else {
               long end = System.currentTimeMillis();
@@ -184,34 +188,43 @@ public class UserController {
         //        String email = book.getUser().getEmail();
         //        User user = this.getUserDetails(email);
         //        book.setUser(getUserDetails(email));
-        logger.info("Info:Calling addBookApi");
-        stasDClient.incrementCounter("addBookApi");
-        long begin = System.currentTimeMillis();
-        Book b = bookRepository.findByisbnAndUserEmail(book.getIsbn(), book.getUserEmail());
-        if(b !=null) {
-            String error = "Book already exists. Try editing the existing book";
-            throw new Exception(error);
-        };
-        Book savedBook = new Book();
-        savedBook = bookRepository.save(book);
-        long end = System.currentTimeMillis();
-        long timeTaken = end - begin;
-        logger.info("TIme taken by addBookApi " + timeTaken + "ms");
-        stasDClient.recordExecutionTime("DB-addBookApiTime", timeTaken);
-        return savedBook;
+        if(isLoogedIn(book.getUserEmail())) {
+            logger.info("Info:Calling addBookApi");
+            stasDClient.incrementCounter("addBookApi");
+            long begin = System.currentTimeMillis();
+            Book b = bookRepository.findByisbnAndUserEmail(book.getIsbn(), book.getUserEmail());
+            if(b !=null) {
+                String error = "Book already exists. Try editing the existing book";
+                throw new Exception(error);
+            };
+            Book savedBook = new Book();
+            savedBook = bookRepository.save(book);
+            long end = System.currentTimeMillis();
+            long timeTaken = end - begin;
+            logger.info("TIme taken by addBookApi " + timeTaken + "ms");
+            stasDClient.recordExecutionTime("DB-addBookApiTime", timeTaken);
+            return savedBook;
+        } else {
+            throw new Exception();
+        }
+
     }
 
     @GetMapping(path="/getAllBooksByEmail")
-    public List<Book> getAllBooksByEmail(@RequestParam String email) {
-        logger.info("Info:Calling getAllBooksByEmailApi");
-        stasDClient.incrementCounter("getAllBooksByEmailApi");
-        long begin = System.currentTimeMillis();
-        List<Book> bookList = bookRepository.getAllByUserEmail(email);
-        long end = System.currentTimeMillis();
-        long timeTaken = end - begin;
-        logger.info("TIme taken by getAllBooksByEmailApi " + timeTaken + "ms");
-        stasDClient.recordExecutionTime("DB-getAllBooksByEmailApiTime", timeTaken);
-        return bookList;
+    public List<Book> getAllBooksByEmail(@RequestParam String email) throws Exception {
+        if(isLoogedIn(email)) {
+            logger.info("Info:Calling getAllBooksByEmailApi");
+            stasDClient.incrementCounter("getAllBooksByEmailApi");
+            long begin = System.currentTimeMillis();
+            List<Book> bookList = bookRepository.getAllByUserEmail(email);
+            long end = System.currentTimeMillis();
+            long timeTaken = end - begin;
+            logger.info("TIme taken by getAllBooksByEmailApi " + timeTaken + "ms");
+            stasDClient.recordExecutionTime("DB-getAllBooksByEmailApiTime", timeTaken);
+            return bookList;
+        } else {
+            throw new Exception();
+        }
     }
 
     @PostMapping("/updateBookDetails")
@@ -302,25 +315,29 @@ public class UserController {
      * Cart APIs
      */
     @PostMapping("/addBookToCart")
-    public @ResponseBody Cart addBookToCart(@RequestBody Cart cart) {
-        logger.info("Info:Calling addBookToCartApi");
-        stasDClient.incrementCounter("addBookToCartApi");
-        long begin = System.currentTimeMillis();
-        Cart cartItem = cartRepository.findBySellersemailAndIsbn(cart.getSellersemail(), cart.getIsbn());
-        if(cartItem == null) {
-            long end = System.currentTimeMillis();
-            long timeTaken = end - begin;
-            logger.info("TIme taken by addBookToCartApi " + timeTaken + "ms");
-            stasDClient.recordExecutionTime("addBookToCartApiTime", timeTaken);
-            return cartRepository.save(cart);
+    public @ResponseBody Cart addBookToCart(@RequestBody Cart cart) throws Exception {
+        if(isLoogedIn(cart.getBuyersemail())) {
+            logger.info("Info:Calling addBookToCartApi");
+            stasDClient.incrementCounter("addBookToCartApi");
+            long begin = System.currentTimeMillis();
+            Cart cartItem = cartRepository.findBySellersemailAndIsbn(cart.getSellersemail(), cart.getIsbn());
+            if(cartItem == null) {
+                long end = System.currentTimeMillis();
+                long timeTaken = end - begin;
+                logger.info("TIme taken by addBookToCartApi " + timeTaken + "ms");
+                stasDClient.recordExecutionTime("addBookToCartApiTime", timeTaken);
+                return cartRepository.save(cart);
+            } else {
+                cartRepository.updateCart(cart.getQuantity(), cart.getPrice(), cart.getSellersemail(), cart.getIsbn(), cart.getBuyersemail());
+                Cart item= new Cart();
+                long end = System.currentTimeMillis();
+                long timeTaken = end - begin;
+                logger.info("TIme taken by addBookToCartApi " + timeTaken + "ms");
+                stasDClient.recordExecutionTime("DB-addBookToCartApiTime", timeTaken);
+                return item;
+            }
         } else {
-            cartRepository.updateCart(cart.getQuantity(), cart.getPrice(), cart.getSellersemail(), cart.getIsbn(), cart.getBuyersemail());
-            Cart item= new Cart();
-            long end = System.currentTimeMillis();
-            long timeTaken = end - begin;
-            logger.info("TIme taken by addBookToCartApi " + timeTaken + "ms");
-            stasDClient.recordExecutionTime("DB-addBookToCartApiTime", timeTaken);
-            return item;
+            throw new Exception();
         }
     }
 
@@ -411,5 +428,47 @@ public class UserController {
             return false;
         }
        return false;
+    }
+
+    public boolean isLoogedIn(String email) {
+        try{
+//            UserSession u = userSessionRepository.findByEmail(email);
+            List<UserSession> seesionList = userSessionRepository.findAll();
+            UserSession u = seesionList.stream().filter(s -> s.getEmail().equals(email)).findFirst().get();
+            if(u != null) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception err) {
+            logger.error(err.getMessage());
+            return false;
+        }
+    }
+
+    public boolean setUserSession(String email) {
+        try {
+            UserSession uSession = new UserSession();
+            uSession.setEmail(email);
+            UserSession session = userSessionRepository.save(uSession);
+            return true;
+
+        } catch (Exception err) {
+            return false;
+        }
+    }
+
+    @GetMapping("/logout")
+    public boolean logout(@RequestParam String email) {
+        try {
+//            List<UserSession> uList = userSessionRepository.findByEmail(email);
+            List<UserSession> seesionList = userSessionRepository.findAll();
+            UserSession u = seesionList.stream().filter(s -> s.getEmail().equals(email)).findFirst().get();
+            userSessionRepository.delete(u);
+            return true;
+        } catch (Exception err) {
+            logger.error(err.getMessage());
+            return false;
+        }
     }
 }
