@@ -36,9 +36,15 @@ export class AppComponent {
 
 
   logout() {
-    this.authService.logout();
+    this.user = JSON.parse(localStorage.getItem('currentUser'));
+    this.authService.logout(this.user.email);
+    // this.authService.logoutBackendSession(this.user.email)
+    // .subscribe(data=>{
+    //   console.log("loggedout");
+    // }, err=>{
+    //   console.log("loggedouter");
+    // })
     this.router.navigate([""]);
-
   }
 
   updateUserDeatils(): void {
