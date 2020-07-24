@@ -40,7 +40,13 @@ public class AmazonSQSClient {
 
     private AmazonSQS amazonSQSClient;
 
-    private final static String QUEUE = "password-reset-queue";
+//    private final static String QUEUE = "password-reset-queue";
+
+    @Value("${QUEUE}")
+    private String QUEUE;
+
+//    @Value("${DOMAIN_NAME}")
+//    private String domainName;
 
     @PostConstruct
     private void init() {
@@ -53,6 +59,7 @@ public class AmazonSQSClient {
             receiveMessageAndDelete();
 //            CreateQueueResult create_result = sqsClient.createQueue(sqsQueue);
             String queueUrl = amazonSQSClient.getQueueUrl(QUEUE).getQueueUrl();
+            logger.info("AmazonSQSClientClass queueUrl : " + queueUrl + " ----");
             StringBuilder messageString = new StringBuilder();
             messageString.append(userEmail + ",");
             messageString.append("http://" + "prod.arundathipatil.me" + "/reset?email="+ userEmail + "&token=" + token);
@@ -60,6 +67,7 @@ public class AmazonSQSClient {
             logger.info("AmazonSQSClientClass- Pushed message to queue with email : " + userEmail + " and token : " + messageString.toString() + "-----");
             SendMessageRequest messageRequest = new SendMessageRequest()
                     .withQueueUrl(queueUrl).withMessageBody(messageString.toString());
+            logger.info("AmazonSQSClientClass-messageRequest "+ messageRequest + "------");
             amazonSQSClient.sendMessage(messageRequest);
             logger.info("AmazonSQSClientClass-Message added in queue ------");
             receiveMessageAndDelete();
@@ -76,9 +84,11 @@ public class AmazonSQSClient {
         logger.info("AmazonSQSClientClass-Inside receiveMessageAndDelete");
         try{
             String queueUrl = amazonSQSClient.getQueueUrl(QUEUE).getQueueUrl();
+            logger.info("AmazonSQSClientClass queueUrl : " + queueUrl + " ----");
             List<Message> receivedMessageList = amazonSQSClient.receiveMessage(queueUrl).getMessages();
             logger.info("AmazonSQSClientClass- Received Message List: "+ receivedMessageList.toString() + "====");
             for(Message message : receivedMessageList) {
+                logger.info("AmazonSQSClientClass Inside For loop with meaage: " + message.toString());
                 if (message.getBody()!= null && !message.getBody().isEmpty()) {
                     logger.info("AmazonSQSClientClass-Receiving message" + message.getBody() + "==");
                     amazonSNSClient.publish(message.getBody());
