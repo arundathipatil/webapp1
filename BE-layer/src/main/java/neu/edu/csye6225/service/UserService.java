@@ -4,6 +4,6 @@ import org.springframework.http.ResponseEntity;
 
 public interface UserService {
 
-    public ResponseEntity<Object> resetPassword(String email);
+    public ResponseEntity<Object> resetPassword(String email) throws Exception;
 
 }

@@ -15,12 +15,11 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 
 @Service("amazonSNSService")
-@Profile("aws")
 public class AmazonSNSClient {
     private AmazonSNS snsClient;
 
-    @Value("${topic.arn}")
-    private String topicArn;
+//    @Value("${topic.arn}")
+//    private String topicArn;
 
     private Logger logger = LoggerFactory.getLogger(AmazonSNSClient.class);
 

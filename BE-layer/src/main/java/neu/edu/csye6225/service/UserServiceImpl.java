@@ -11,12 +11,17 @@ public class UserServiceImpl implements UserService {
 
 
 
-    @Autowired(required = false)
-    private AmazonSQSClient amazonSQSClient;
+    @Autowired
+    private AmazonSQSClient amazonSQSClient ;
+//            = new AmazonSQSClient();
 
     @Override
-    public ResponseEntity<Object> resetPassword(String email) {
-        amazonSQSClient.sendMessageToQueue(email);
-        return new ResponseEntity<Object>(HttpStatus.ACCEPTED);
+    public ResponseEntity<Object> resetPassword(String email) throws Exception {
+        try{
+            amazonSQSClient.sendMessageToQueue(email);
+            return new ResponseEntity<Object>(HttpStatus.ACCEPTED);
+        } catch (Exception er) {
+            return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
+        }
     }
 }
