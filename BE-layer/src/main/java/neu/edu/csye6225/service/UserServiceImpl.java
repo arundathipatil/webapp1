@@ -14,7 +14,6 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private AmazonSQSClient amazonSQSClient ;
-//            = new AmazonSQSClient();
 
     @Override
     public ResponseEntity<Object> resetPassword(String email) throws Exception {
