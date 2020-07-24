@@ -48,7 +48,7 @@ public class AmazonSQSClient {
                 .withCredentials(DefaultAWSCredentialsProviderChain.getInstance()).build();
     }
 
-    public void sendEmail(String userEmail, String token) {
+    public void sendMessageToQueue(String userEmail, String token) {
         try {
             receiveMessageAndDelete();
 //            CreateQueueResult create_result = sqsClient.createQueue(sqsQueue);
