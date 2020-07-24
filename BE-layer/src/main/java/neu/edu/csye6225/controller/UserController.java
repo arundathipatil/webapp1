@@ -4,10 +4,12 @@ import neu.edu.csye6225.model.*;
 import neu.edu.csye6225.repository.*;
 import neu.edu.csye6225.service.AmazonService;
 import neu.edu.csye6225.service.AmazonServiceImpl;
+import neu.edu.csye6225.service.UserService;
 import org.springframework.data.domain.Sort;
 import neu.edu.csye6225.helper.Hashing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.timgroup.statsd.StatsDClient;
@@ -34,6 +36,9 @@ public class UserController {
     private UserSessionRepository userSessionRepository;
     @Autowired
     private StatsDClient stasDClient;
+
+    @Autowired
+    private UserService userService;
 
     private Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -468,6 +473,22 @@ public class UserController {
             return true;
         } catch (Exception err) {
             logger.error(err.getMessage());
+            return false;
+        }
+    }
+
+    @GetMapping("/resetPassword")
+    public boolean resetPassword(@RequestParam String email) {
+        try {
+            User u = userRespository.getUserByEmail(email);
+            if(u !=null) {
+                ResponseEntity<Object> pwdReset = userService.resetPassword(email);
+                return true;
+            } else {
+                throw  new Exception();
+            }
+        } catch (Exception ex) {
+            logger.error("Issue could be : Enter registered email ID or Unable to send reset password link through email");
             return false;
         }
     }
