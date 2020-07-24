@@ -14,3 +14,22 @@
    </form>   
 </div>
 <button mat-raised-button color="primary" [routerLink]="['registration']">Register</button>
+
+<div>
+  <form [formGroup]="resetPwdForm" (ngSubmit)="sendResetPwdLink()">
+      <label>
+          Enter Email ID:
+          <input type="text" formControlName="resetPwdEmail">
+        </label>
+        <div *ngIf="resetPwdEmail.invalid && (resetPwdEmail.dirty || resetPwdEmail.touched)" class="alert alert-danger">
+
+          <div *ngIf="resetPwdEmail.errors.required" style="color: red;">
+            Email is required.
+          </div>
+          <div *ngIf="resetPwdEmail.errors.email" style="color: red;">
+            Please provide a valid email id
+          </div>
+          </div>
+          <button type="submit" [disabled]="!resetPwdForm.valid">Reset</button>
+  </form>
+</div>

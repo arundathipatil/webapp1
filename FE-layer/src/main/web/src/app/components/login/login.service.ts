@@ -36,4 +36,8 @@ export class LoginService {
      return this.apiService.get(constant.urls.getUserDeatils + "?email="+email);
     // return of({firstName:"Prati", lastName: "Patil", email:"prati.patil@gmail.com"});
   }
+
+  sendResetPwdEmail(email: string) {
+    return this.apiService.get(constant.urls.resetPassword+ "?email="+email)
+  }
 }

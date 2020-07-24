@@ -16,6 +16,7 @@ export const constant = {
         "uploadPhoto": "/api/uploadPhoto",
         "getImages": "/api/getPhotosByBookISBNAndEmail",
         "deleteImage": "/api/deleteImage",
-        "logout": "/api/logout"
+        "logout": "/api/logout",
+        "resetPassword": "/api/resetPassword"
     }
 }

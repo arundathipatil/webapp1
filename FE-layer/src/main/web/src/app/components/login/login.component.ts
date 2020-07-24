@@ -16,6 +16,11 @@ export class LoginComponent implements OnInit {
   email : FormControl = new FormControl('', Validators.required);
   password: FormControl = new FormControl('', [Validators.required, Validators.nullValidator])
 
+  resetPwdEmail : FormControl = new FormControl('', [Validators.required, Validators.email]);
+  resetPwdForm : FormGroup = new FormGroup({
+    resetPwdEmail: this.resetPwdEmail
+});
+
   loginForm : FormGroup = new FormGroup({
         email: this.email,
         password: this.password
@@ -83,6 +88,15 @@ export class LoginComponent implements OnInit {
       getUserDeatils(email: string) {
         // this.loginService.
 
+      }
+
+      sendResetPwdLink() {
+        this.loginService.sendResetPwdEmail(this.resetPwdEmail.value)
+        .subscribe(data=>{
+            alert("Password reset link sent to email address " + this.resetPwdEmail.value);
+        }, err=>{
+          console.log("Unable to send reset password link");
+        })
       }
   
   
