@@ -18,9 +18,6 @@ import javax.annotation.PostConstruct;
 public class AmazonSNSClient {
     private AmazonSNS snsClient;
 
-//    @Value("${topic.arn}")
-//    private String topicArn;
-
     private Logger logger = LoggerFactory.getLogger(AmazonSNSClient.class);
 
     @PostConstruct
