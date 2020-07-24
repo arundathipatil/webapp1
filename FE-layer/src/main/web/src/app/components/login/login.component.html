@@ -15,7 +15,8 @@
 </div>
 <button mat-raised-button color="primary" [routerLink]="['registration']">Register</button>
 
-<div>
+<div style="margin: 3em">Forgot Password? Please enter your email id to receive reset password link</div>
+<div style="margin: 4em">
   <form [formGroup]="resetPwdForm" (ngSubmit)="sendResetPwdLink()">
       <label>
           Enter Email ID:
