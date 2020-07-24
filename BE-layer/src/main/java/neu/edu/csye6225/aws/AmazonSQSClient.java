@@ -20,8 +20,10 @@ import com.amazonaws.services.sqs.model.AmazonSQSException;
 import com.amazonaws.services.sqs.model.CreateQueueResult;
 import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Service("amazonSQSService")
+@EnableScheduling
 public class AmazonSQSClient {
 
     private AmazonSQS amazonSQSClient;
@@ -85,7 +87,8 @@ public class AmazonSQSClient {
     public void receiveMessageAndDeleteFromQueue() {
         logger.info("Inside receiveMessageAndDelete method");
         String queueUrl = amazonSQSClient.getQueueUrl(QUEUE).getQueueUrl();
-        List<Message> receivedMessageList = amazonSQSClient.receiveMessage(amazonSQSClient.getQueueUrl(QUEUE).getQueueUrl()).getMessages();
+//        List<Message> receivedMessageList = amazonSQSClient.receiveMessage(amazonSQSClient.getQueueUrl(QUEUE).getQueueUrl()).getMessages();
+        List<Message> receivedMessageList = amazonSQSClient.receiveMessage(queueUrl).getMessages();
         for(Message message : receivedMessageList) {
             if (message.getBody() !=null && !message.getBody().isEmpty()) {
                 logger.info("Receiving message" + message.getBody());
