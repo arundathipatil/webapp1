@@ -93,9 +93,13 @@ export class LoginComponent implements OnInit {
       sendResetPwdLink() {
         this.loginService.sendResetPwdEmail(this.resetPwdEmail.value)
         .subscribe(data=>{
+          if(data) {
             alert("Password reset link sent to email address " + this.resetPwdEmail.value);
+          } else {
+            alert("Unable to send reset password link! Please try again later");
+          }
         }, err=>{
-          console.log("Unable to send reset password link");
+          console.log("Unable to send reset password link! Please try again later");
         })
       }
   
