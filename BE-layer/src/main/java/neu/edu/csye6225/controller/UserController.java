@@ -185,8 +185,9 @@ public class UserController {
     /**
      * Book related APIS's
      */
+
+//    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/addBook")
-    @CrossOrigin(origins = "http://localhost:4200")
     public Book addNewBook(@RequestBody Book book) throws Exception {
         //        Book b = new Book();
         //        book.s
